@@ -28,13 +28,23 @@ def annotation():
         return redirect('/login_error')
 
 
+@module.route('/search_mongo', methods=['GET', 'POST'])
+def search_mongo():
+    myclient = pymongo.MongoClient(mongo_uri)
+    database = myclient["dataportal_prod_meta"]
+    collection = database["datasets"]
+    result = collection.find({"$text": {"$search": searchString}})
+    return result
+
+
 @module.route("/summary_table_mongo", methods=['GET', 'POST'])
 def summary_table_mongo():
     
-    myclient = pymongo.MongoClient(mongo_uri) # Mongo container name is 'mongo'. # local mongodb server.   # Connects to the mongodb daabase and returns everything.
+    myclient = pymongo.MongoClient(mongo_uri) 
     database = myclient["dataportal_prod_meta"]
     collection = database["datasets"]
     result = collection.find()
+
     dict_list = []
     for item in result:
         obj = {
