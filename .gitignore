@@ -1,4 +1,6 @@
 *.pyc
+*.cfg
+*.log
 *__pycache__
 __pycache__
 ./__pycache__
