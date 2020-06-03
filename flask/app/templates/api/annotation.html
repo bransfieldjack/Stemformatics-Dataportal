@@ -532,9 +532,15 @@
                   
               
                   <v-card-actions>
-                    <v-list-item class="grow">
-               
-                      <img v-if='item.Annotator !== "" ' src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
+                      <v-row>
+                        <v-col cols="12" md="1">
+                          <img v-if='item.Annotator !== "" ' src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
+                        </v-col>
+                        <v-col cols="12" md="1">
+                          <p class="annotator">Annotator: [[item.Annotator]]</p>
+                        </v-col>
+                        <v-col cols="12" md="10"></v-col>
+                      </v-row>
 
                       <v-spacer></v-spacer>
                       <v-btn small tile :disabled="cardIsDisabled" @click="handleClick(item)">Samples</v-btn>
