@@ -2,102 +2,13 @@
 
 <template>
 
-
-    <v-container fill-height fluid>
-
-      <v-row align="center">
-        <v-col cols="12" md="6">
-          <h1 style="color: #35B4CF;">Annotator:</h1>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-alert v-if="annotatorValidated" type="success">
-            Validation successful
-          </v-alert>
-        </v-col>
-      </v-row>
-    
-      
-      <v-row align="center">
-
-        <v-col cols="12" md="8">
-
-          <br>
-          <v-text-field
-            color="#35B4CF"
-            :rules="nameRules"
-            v-model="annotator.name"
-            label="Name"
-            outlined
-          ></v-text-field>
-
-          <v-select
-            color="#35B4CF"
-            :items="items"
-            :rules="roleRules"
-            v-model="annotator.role"
-            label="Role"
-            outlined
-          ></v-select>
-
-          <v-textarea
-            color="#35B4CF"
-            large
-            outlined
-            v-model="annotator.notes"
-            :rules="notesRules"
-            name="Notes"
-            label="Notes"
-            height="200"
-          ></v-textarea>
-
-        </v-col>
-
-        <v-col cols="12" md="4">
-          <template>
-            <v-row justify="center">
-              <v-date-picker color="#35B4CF" v-model="annotator.date"></v-date-picker>
-            </v-row>
-          </template>
-        </v-col>
-        
-      </v-row>
-
-      <v-row>
-        <v-col cols="12" md="10">
-          <v-row align="center">
-            <v-alert v-if="vueAlertAnnotatorNotValidated" type="error">
-              Not validated
-            </v-alert>
-          </v-row>
-        </v-col>
-      
-        <v-col cols="12" md="2">
-        
-              <a style="text-decoration: none;" href="#Dataset">
-                <v-btn tile color="#35B4CF" @click="validate()" class="mr-4 white--text"> Validate </v-btn>
-                <!-- <v-btn
-                  tile
-                  @click="validate(); changeBackgroundColor = !changeBackgroundColor"
-                  :style="{
-                      backgroundColor : changeBackgroundColor ? '#35B4CF !important' : '',
-                      color: changeBackgroundColor ? 'white !important' : '35B4CF'
-                      }"
-                  class="mr-4 grey--text"
-              
-                >
-                  Validate 
-                </v-btn> -->
-              </a>
-          
-        </v-col>
-      </v-row>
-
-    </v-container>
-
-    <v-container fill-height fluid v-if="annotatorValidated" id="Dataset">
+    <!-- v-if="annotatorValidated"  -->
+    <v-container fill-height fluid id="Dataset">
  
       <v-row align="center" >
+   
         <v-col cols="12" md="6">
+          <!-- <p>{{user}}</p> -->
           <h1 style="color: #35B4CF;">Dataset:</h1>
         </v-col>
         <v-col cols="12" md="6">

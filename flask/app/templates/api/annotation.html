@@ -386,6 +386,8 @@
 
     <v-row >
 
+      <!-- [[data]] -->
+
       <v-autocomplete
         v-model="model"
         clearable
@@ -408,7 +410,7 @@
       
     <v-row>
 
-      <v-col cols="2" >
+      <!-- <v-col cols="2" >
      
           <v-row >
             <br>
@@ -431,9 +433,9 @@
             </v-expansion-panels>
           </v-row>
        
-      </v-col>
-      <v-col cols="1"></v-col>
-      <v-col cols="9">
+      </v-col> -->
+      <!-- <v-col cols="1"></v-col> -->
+      <v-col cols="12">
      
             <v-row>
               
@@ -442,7 +444,7 @@
                   <p class="title">Showing:</p>
                 </v-col>
                 <v-col cols="12" md="10" class="text-right">
-                  <v-btn small @click="resetData">Clear</v-btn>
+                  <v-btn small @click="resetData">Reset</v-btn>
                 </v-col>
               </v-row>
 
@@ -496,6 +498,7 @@
         <template>
           <div class="text-center">
             <v-pagination
+              color="#4CBBD4"
               v-model="page"
               :length="Math.ceil(data.length/perPage)"
               :total-visible="7"

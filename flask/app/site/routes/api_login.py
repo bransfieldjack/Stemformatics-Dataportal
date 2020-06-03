@@ -107,6 +107,7 @@ def api_login():
     session["loggedIn"] = True
 
     role = _username.role(username)
+    session["role"] = role
 
     if role == 'admin':
         session["admin"] = True

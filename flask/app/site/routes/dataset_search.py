@@ -12,14 +12,16 @@ module = Blueprint('dataset_search', __name__)
 @module.route("/samples_grid", methods=['GET', 'POST'])
 def samples_grid():
     data = request.get_json()
-    print(data)
     dataset_id = data['dataset_id']
     ds = datasets.Dataset(dataset_id)
     sampleTable = ds.sampleTable()
     jsonSampleTable = sampleTable.to_json(orient="split")
 
     if session["loggedIn"] == True:
-        return jsonSampleTable
+        if jsonSampleTable != None:
+            return jsonSampleTable
+        else:
+            return {"Message": "No samples found for dataset_id: " + dataset_id}
     else:
         return "Access Denied"
 
