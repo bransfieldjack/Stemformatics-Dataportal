@@ -45,9 +45,10 @@
 
                           <template v-slot:activator="{ on }">
                             <v-dialog
-                            v-model="dialog"
-                            width="500"
-                          >
+                              v-model="dialog"
+                              width="500"
+                              :retain-focus="false"
+                            >
                             <template v-slot:activator="{ on }">
                               <v-btn
                                 color="#35B4CF"
@@ -201,12 +202,23 @@
                                 </v-btn>
 
                                 <v-btn
+                                  v-if="can_annotate"
                                   color="#35B4CF"
                                   dark
                                   tile
                                   v-on="on"
                                 >
                                 Selected: [[cellRowUpdateValues.count]]
+                                </v-btn>
+
+                                <v-btn
+                                  @click="assignAnnotatorDialog = true"
+                                  v-else
+                                  color="#35B4CF"
+                                  dark
+                                  tile
+                                >
+                                Annotate
                                 </v-btn>
 
                               </template>
@@ -242,6 +254,52 @@
 
                       </form>
 
+                      <!-- Assign Annotator modal dialog-->
+                      <v-dialog
+                        v-model="assignAnnotatorDialog"
+                        max-width="500"
+                        :retain-focus="false"
+                      >
+                        <v-card>
+                          <v-card-title class="headline">Annotate this Dataset:</v-card-title>
+                          <v-progress-linear v-show="annotatorIsLoading" indeterminate color="#35B4CF"></v-progress-linear>
+
+                          <v-card-text>
+                            <v-container>
+
+                              <v-row>
+                                <v-col cols="12">
+                                  <v-text-field v-model="annotatorUsername" label="User (email address):"></v-text-field>
+                                </v-col>
+                              </v-row>
+
+                              <v-row>
+                                <v-col cols="12">
+                                  <v-text-field v-model="annotatorPassword" label="Password:"></v-text-field>
+                                </v-col>
+                              </v-row>
+
+                              <p>[[assignAnnotatorResponseMessage]]</p>
+
+                              <v-row>
+                                <v-col cols="12" md="8"></v-col>
+
+                                <v-col cols="12" md="2"></v-col>
+                                
+                                <v-col cols="12" md="2">
+                                  <a @click="assignAnnotator()">Save<v-img src="https://img.icons8.com/flat_round/64/000000/lock--v1.png"/></a>
+                                </v-col>
+                               
+                              </v-row>
+
+                            </v-container>
+                          </v-card-text>
+
+                        </v-card>
+
+                      </v-dialog>
+                      <!-- Assign Annotator modal dialog-->
+
                       <v-dialog
                           v-model="commitModalDialog"
                           width="500"
@@ -256,7 +314,7 @@
                             </v-col>
 
                             <v-col cols="2">
-                              <v-btn color="#6A76AB" icon dark @click="commitModalDialog = false">
+                              <v-btn color="#6A76AB" icon dark @click="commitModalDialog = false; cardIsDisabled = true;">
                                 <v-icon>mdi-close</v-icon>
                               </v-btn>
                             </v-col>
@@ -441,10 +499,10 @@
               
               <v-row>
                 <v-col cols="12" md="2">
-                  <p class="title">Showing:</p>
+                  <!-- <p class="title">Showing:</p> -->
                 </v-col>
                 <v-col cols="12" md="10" class="text-right">
-                  <v-btn small @click="resetData">Reset</v-btn>
+                  <v-btn tile small @click="resetData">Reset</v-btn>
                 </v-col>
               </v-row>
 
@@ -454,11 +512,11 @@
                 
                   <v-card-title v-text="item.Dataset_id" class="text">
                   </v-card-title>
-            
-                  <v-card-text class="title" @click="handleClick(item)">
-                    <a>[[item.Title]]</a>
+                  
+                  <v-card-text class="title" >
+                    [[item.Title]]
                   </v-card-text>
-
+            
                   <v-card-text class="authors">
                     [[item.Authors]]
                   </v-card-text>
@@ -470,21 +528,18 @@
                   <v-card-text class="authors">
                     [[item.Pubmed]]
                   </v-card-text>
+
+                  
               
                   <v-card-actions>
                     <v-list-item class="grow">
                
-                      <img src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
-              
-                      <!-- <v-row
-                        align="center"
-                        justify="end"
-                      >
-                        <img src="https://img.icons8.com/flat_round/32/000000/lock--v1.png"/>
-                        <span class="subheading"> Assigned</span>
-                      </v-row> -->
+                      <img v-if='item.Annotator !== "" ' src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
 
+                      <v-spacer></v-spacer>
+                      <v-btn small tile :disabled="cardIsDisabled" @click="handleClick(item)">Samples</v-btn>
                     </v-list-item>
+                    
                   </v-card-actions>
                   
                   <hr>
