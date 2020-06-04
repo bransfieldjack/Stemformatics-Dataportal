@@ -16,12 +16,23 @@
           <div class="modal-body">
 
             <template>
+
               <v-tabs
               right
               
               background-color="#35B4CF"
               dark
               >
+                <v-row>
+                  <v-col cols="12" md="1"></v-col>
+                  <v-col cols="12" md="1">
+                    <img src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
+                  </v-col>
+                  <v-col cols="12" md="1">
+                    <p class="annotator">Annotator: [[responseAssignedAnnotator]]</p>
+                  </v-col>
+                  <v-col cols="12" md="8"></v-col>
+                </v-row>
                 
                 <v-tab active>Samples <img src="https://img.icons8.com/dusk/32/A81C84/scatter-plot.png"/></v-tab>
                 <v-tab @click="datasetMetadata">MetaData <img src="https://img.icons8.com/wired/32/A81C84/document.png"/></v-tab>
@@ -49,6 +60,7 @@
                               width="500"
                               :retain-focus="false"
                             >
+                          
                             <template v-slot:activator="{ on }">
                               <v-btn
                                 color="#35B4CF"
@@ -202,7 +214,7 @@
                                 </v-btn>
 
                                 <v-btn
-                                  v-if="can_annotate"
+                                  v-if="responseAssignedAnnotator == user"
                                   color="#35B4CF"
                                   dark
                                   tile
@@ -261,7 +273,7 @@
                         :retain-focus="false"
                       >
                         <v-card>
-                          <v-card-title class="headline">Annotate this Dataset:</v-card-title>
+                          <v-card-title class="headline" style="color: #808080;">Annotate this Dataset:</v-card-title>
                           <v-progress-linear v-show="annotatorIsLoading" indeterminate color="#35B4CF"></v-progress-linear>
 
                           <v-card-text>
@@ -537,7 +549,7 @@
                           <img v-if='item.Annotator !== "" ' src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
                         </v-col>
                         <v-col cols="12" md="1">
-                          <p class="annotator">Annotator: [[item.Annotator]]</p>
+                          <p class="annotator" style="color: #808080;">Annotator: [[item.Annotator]]</p>
                         </v-col>
                         <v-col cols="12" md="10"></v-col>
                       </v-row>

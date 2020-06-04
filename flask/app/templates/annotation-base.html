@@ -30,7 +30,7 @@
 
 .annotator {
   text-decoration: none;
-  color:#808080;
+  color:#ffffff;
   font-family: verdana;
   font-size: 90%;
 }
@@ -225,6 +225,8 @@
       vuetify: new Vuetify(),
       delimiters: ['[[',']]'],  // Change to '[[]]' otherwise the standard moustache interpolation will interfere with flasks jinja template. 
       data:{
+        user: '{{ user }}',
+        responseAssignedAnnotator: '',
         assignAnnotatorResponseMessage: null,
         annotatorIsLoading: false,
         annotatorUsername: '',
@@ -582,6 +584,9 @@
           dataset_id = params.Dataset_id;
           this.selected_dataset = dataset_id;
           this.selected_dataset_title = params.Title;
+
+          axios.post("/getAnnotator", {"dataset_id": params.Dataset_id})
+          .then(result => this.responseAssignedAnnotator = result.data.annotator);
             
           axios.post("/samples_grid", {"dataset_id": params.Dataset_id})
           .then(result => {
