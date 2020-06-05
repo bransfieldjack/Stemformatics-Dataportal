@@ -147,7 +147,8 @@
   <script>
 
     
-      
+    var user = "{{ user }}";
+    var role = "{{ role }}";
    
     var vm = new Vue({
       el: '#app',
@@ -179,13 +180,13 @@
         selectedFile: null,
         items: ['Annotator', 'Administrator'],
         projects: ['iMAC', 'Blood', 'Leukomics'],
-        user: '{{ user }}',
-        role: '{{ role }}',
+        // user: '{{ user }}',
+        // role: '{{ role }}',
         admin: '{{ admin }}',
         annotator: {
-          name: this.user,
-          role: this.role,
-          notes: '',
+          name: user,
+          role: role,
+          notes: 'Dataset upload',
           date: new Date().toJSON().substr(0, 10),
         },
         vueAlertAnnotatorNotValidated: false,
@@ -365,6 +366,8 @@
               "private": this.private
             }
           }
+
+          console.log(data)
 
           axios.post("/api/save_dataset", {"data": data}
           ).then(response => this.dataFormatResponse = response.data)  
