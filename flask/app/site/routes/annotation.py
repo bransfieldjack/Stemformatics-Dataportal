@@ -63,7 +63,7 @@ def assignAnnotator():
 
     if auth == True:
         document = collection.find_one({'dataset_id': dataset_id})
-        if document["annotator"] == '' and document["can_annotate"] == False:
+        if document["annotator"] == "":
             try: 
                 myquery = { "dataset_id": dataset_id }
                 newvalues = { "$set": { "annotator": username, "can_annotate": True } }
@@ -85,38 +85,20 @@ def unAssignAnnotator():
     """
     Assigns a user to a dataset for annotation. 
     """
-    
-    cursor = collection.find({})
 
     data = request.get_json()
     payload = data['data']
     dataset_id = payload['dataset_id']
-    username = payload['username']
-    password = payload['password']
+    title = payload['title']
+    annotator = payload['annotator']
 
-    _username = UserModel.User(username)
-    auth = _username.authenticate(username, password)
-
-    return "test"
-
-    # if auth == True:
-    #     document = collection.find_one({'dataset_id': dataset_id})
-    #     if document["annotator"] == '' and document["can_annotate"] == False:
-    #         try: 
-    #             myquery = { "dataset_id": dataset_id }
-    #             newvalues = { "$set": { "annotator": username, "can_annotate": True } }
-    #             print(newvalues)
-    #             collection.update_one(myquery, newvalues)
-    #             return username + " " + "is now annotating this dataset."
-    #             # collection.update({"dataset_id": dataset_id}, {"$set": {"annotator": username, "can_annotate": true}}, upsert=False)
-    #         except:
-    #             return "An exception occurred"
-    #     else:
-    #         return "An annotator is already assigned to this dataset. To request a transfer, please contact the system administrator: admin@stemformatics.org"
-
-    # else:
-    #     return "User does not exist"
-
+    try:
+        myquery = { "dataset_id": dataset_id }
+        newvalues = { "$set": { "annotator": ''} } 
+        collection.update_one(myquery, newvalues)
+        return "Annotator removed"
+    except:
+        return "Error, annotator removal unsuccessful. "
 
 @module.route('/search_mongo', methods=['GET', 'POST'])
 def search_mongo():

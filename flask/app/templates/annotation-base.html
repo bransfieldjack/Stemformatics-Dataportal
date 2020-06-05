@@ -20,6 +20,9 @@
   
 <style>
 
+.v-btn {
+  box-shadow: none;
+}
 
 .text {
   text-decoration: none;
@@ -313,6 +316,9 @@
           .then(result => this.assignAnnotatorResponseMessage = result.data);
 
           this.annotatorIsLoading = false;
+
+          location.reload();
+          $('#exampleModal').modal({backdrop: 'static', keyboard: false})
 
         },
         enableClickOnce() {

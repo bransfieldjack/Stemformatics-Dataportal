@@ -23,7 +23,7 @@
               background-color="#35B4CF"
               dark
               >
-                <v-row>
+                <v-row v-if="responseAssignedAnnotator">
                   <v-col cols="12" md="1"></v-col>
                   <v-col cols="12" md="1">
                     <img src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
@@ -287,7 +287,7 @@
 
                               <v-row>
                                 <v-col cols="12">
-                                  <v-text-field v-model="annotatorPassword" label="Password:"></v-text-field>
+                                  <v-text-field type="password" v-model="annotatorPassword" label="Password:"></v-text-field>
                                 </v-col>
                               </v-row>
 
@@ -522,43 +522,56 @@
               v-for="(item, i) in paginatedData"
               :key="i">
                 
-                  <v-card-title v-text="item.Dataset_id" class="text">
-                  </v-card-title>
-                  
-                  <v-card-text class="title" >
-                    [[item.Title]]
-                  </v-card-text>
-            
-                  <v-card-text class="authors">
-                    [[item.Authors]]
-                  </v-card-text>
-                   
-                  <v-card-text class="authors">
-                    [[item.Description]]
-                  </v-card-text>
+                  <v-container>
 
-                  <v-card-text class="authors">
-                    [[item.Pubmed]]
-                  </v-card-text>
-
-                  
-              
-                  <v-card-actions>
-                      <v-row>
-                        <v-col cols="12" md="1">
-                          <img v-if='item.Annotator !== "" ' src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
-                        </v-col>
-                        <v-col cols="12" md="1">
-                          <p class="annotator" style="color: #808080;">Annotator: [[item.Annotator]]</p>
-                        </v-col>
-                        <v-col cols="12" md="10"></v-col>
-                      </v-row>
-
-                      <v-spacer></v-spacer>
-                      <v-btn small tile :disabled="cardIsDisabled" @click="handleClick(item)">Samples</v-btn>
-                    </v-list-item>
+                    <v-card-title v-text="item.Dataset_id" class="text">
+                    </v-card-title>
                     
-                  </v-card-actions>
+                    <v-card-text class="title" >
+                      <v-btn small text :disabled="cardIsDisabled" @click="handleClick(item)">[[item.Title]]</v-btn>
+                    </v-card-text>
+
+                    <v-row>
+                      <v-col cols="12" md="1"></v-col>
+                      <v-col cols="12" md="10">
+                        <v-card-text class="authors">
+                          [[item.Authors]]
+                        </v-card-text>
+                         
+                        <v-card-text class="authors">
+                          [[item.Description]]
+                        </v-card-text>
+      
+                        <v-card-text class="authors">
+                          [[item.Pubmed]]
+                        </v-card-text>
+
+                        <v-card-actions>
+                          <v-row>
+    
+                            <template v-if="item.Annotator">
+                              <v-col cols="12" md="1">
+                                <img src="https://img.icons8.com/flat_round/32/000000/lock--v1.png" />
+                              </v-col>
+                              <v-col cols="12" md="1">
+                                <p class="annotator" style="color: #808080;">Annotator: [[item.Annotator]]</p>
+                              </v-col>
+                              <v-col cols="12" md="10"></v-col>
+                            </template>
+    
+                          </v-row>
+    
+                        </v-list-item>
+                        
+                      </v-card-actions>
+
+                      </v-col>
+                      <v-col cols="12" md="1"></v-col>
+                    </v-row>
+
+                  </v-container>                  
+              
+                  
                   
                   <hr>
 

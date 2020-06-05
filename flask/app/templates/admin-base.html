@@ -23,6 +23,14 @@
   
 <style>
 
+  
+.annotator {
+  text-decoration: none;
+  color:#6A76AB;
+  font-family: verdana;
+  font-size: 90%;
+}
+
 .text-green input {
     color: #35B4CF !important;
 }
@@ -156,6 +164,31 @@
       vuetify: new Vuetify(),
       delimiters: ['[[',']]'],  // Change to '[[ ]]' otherwise the standard vue.js template '{}' parenthesis will interfere with flasks jinja templates. 
       data:{
+        showRemoveDialog: false,
+        unAssignAnnotatorResponse: null,
+        assignedAnnotatorDialog: false,
+        selectedAnnotatorRow: null,
+        dialog: false,
+        headers: [
+          { text: 'Annotator', value: 'annotator'},
+          { text: 'Title', value: 'title'},
+          { text: 'Dataset ID', value: 'dataset_id'},
+        ],
+        assignedRows: [],
+        editedIndex: -1,
+
+        editedItem: {
+          name: '',
+          calories: 0,
+          fat: 0,
+          carbs: 0,
+          protein: 0,
+        },
+
+
+
+
+        assignedDatasets: null,
         newUser: {
           username: '',
           password: '',
@@ -181,6 +214,35 @@
         rowData: [], 
       },
       methods: {
+        
+        editItem (item) {
+          this.editedIndex = this.assignedRows.indexOf(item)
+          this.editedItem = Object.assign({}, item)
+          this.dialog = true
+        },
+
+        deleteItem (item) {
+          const index = this.assignedRows.indexOf(item)
+          confirm('Are you sure you want to delete this item?') && this.assignedRows.splice(index, 1)
+        },
+
+        close () {
+          this.dialog = false
+          this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
+            this.editedIndex = -1
+          })
+        },
+
+        save () {
+          if (this.editedIndex > -1) {
+            Object.assign(this.assignedRows[this.editedIndex], this.editedItem)
+          } else {
+            this.assignedRows.push(this.editedItem)
+          }
+          this.close()
+        },
+      
         updateUser: function(){
             if(this.update.password === this.update.verifyPassword){
               axios.post("/user_update", {"data": this.update})
@@ -262,17 +324,60 @@
             this.update.username = event.email;
             this.updateDialog = true;
             this.clicked = event;
-        }
+        },
+        datasetRowHandleClick: function(item){
+
+          this.assignedAnnotatorDialog = true;
+          this.selectedAnnotatorRow = item;
+
+        },
+        removeAnnotator: function(){
+
+          const dataset_id = this.selectedAnnotatorRow.dataset_id;
+          const title = this.selectedAnnotatorRow.title;
+          const annotator = this.selectedAnnotatorRow.annotator;
+        
+          axios.post('/unAssignAnnotator', {"data": {"dataset_id": dataset_id, "title": title, "annotator": annotator}})
+          .then(result => this.unAssignAnnotatorResponse = result.data);
+
+          location.reload();
+
+        },
       },
       computed: {
- 
+        formTitle () {
+          return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+        },
+      },
+      watch: {
+        dialog (val) {
+          val || this.close()
+        },
       },
       mounted(){
+
 
         axios.post("/api/get_all_users")
         .then(result => this.rowData = result.data.users.map(function(item){
             return item;
         }))
+
+        axios.post("/api/get_assigned_datasets")
+        .then(result => this.assignedRows = result.data.assigned_datasets.map(function(item){
+
+          var dataset_id = item['dataset_id']
+          var annotator = item['annotator']
+          var title = item['title'].replace(/[^a-zA-Z0-9]+/g, " ")
+
+          obj = {
+            'dataset_id': dataset_id,
+            'annotator': annotator,
+            'title': title
+          }
+
+          return obj;
+          
+        }));
 
       }
 
