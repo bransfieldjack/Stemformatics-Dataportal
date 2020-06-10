@@ -1,6 +1,6 @@
 ![logo](https://dataportal-data.s3-ap-southeast-2.amazonaws.com/static/images/test_logo.PNG)
 
-[![Build Status](https://travis-ci.com/s4madmin/Stemformatics-Dataportal.svg?branch=master)](https://travis-ci.com/s4madmin/Stemformatics-Dataportal)
+[![Build Status](https://travis-ci.com/s4madmin/dp-prod.svg?branch=master)](https://travis-ci.com/s4madmin/Stemformatics-Dataportal)
 
 # Stemformatics Dataportal API 
 
