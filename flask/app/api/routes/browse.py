@@ -27,6 +27,10 @@ from app import app
 module = Blueprint('browse', __name__)
 
 mongo_uri = app.config["MONGO_URI"]
+mongo_uri = app.config["MONGO_URI"]
+myclient = pymongo.MongoClient(mongo_uri)
+database = myclient["dataportal_prod_meta"]
+collection = database["datasets"]
 
 
 @module.route("/summary_table", methods=['GET', 'POST'])
@@ -142,6 +146,30 @@ def get_all_users():
     _dict = newdf.to_dict("records")
 
     return {"users": _dict}
+
+
+@module.route("/get_assigned_datasets", methods=['GET', 'POST'])
+def get_assigned_datasets():
+
+    # cursor = collection.find({})
+    cursor = collection.find({'annotator': {'$exists': 'true', "$ne" : ""}})    # Look for all the fields that arent blank. 
+    _dict_list = []
+    for item in cursor:
+
+        _id = item['_id']
+        dataset_id = item['dataset_id']
+        annotator = item['annotator']
+        title = item['dataset_metadata'][0]['title']
+
+        _dict = {
+            '_id': dumps(_id),
+            'dataset_id': dataset_id,
+            'annotator': annotator,
+            'title': title
+        }
+        _dict_list.append(_dict)
+
+    return {'assigned_datasets': _dict_list}
 
     
 @module.after_request  # Necessary to add the response headers for comms back to the UI. Add only authorized front end applications, example: https://ui-dp.stemformatics.org

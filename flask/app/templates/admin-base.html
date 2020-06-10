@@ -11,18 +11,25 @@
   <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
   <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
   <title>Dataportal</title>
-  <link rel="icon" href="https://dataportal-data.s3-ap-southeast-2.amazonaws.com/static/images/test_logo.PNG">
+  <link rel="icon" href="https://dataportal-data.s3-ap-southeast-2.amazonaws.com/static/images/favicon-32x32.png">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <a href="https://icons8.com/icon/41615/search"></a>
-  <link rel="icon" href="https://dataportal-data.s3-ap-southeast-2.amazonaws.com/static/images/small_s4m_icon.PNG">
   <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
   <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
   
 <style>
+
+  
+.annotator {
+  text-decoration: none;
+  color:#6A76AB;
+  font-family: verdana;
+  font-size: 90%;
+}
 
 .text-green input {
     color: #35B4CF !important;
@@ -157,6 +164,30 @@
       vuetify: new Vuetify(),
       delimiters: ['[[',']]'],  // Change to '[[ ]]' otherwise the standard vue.js template '{}' parenthesis will interfere with flasks jinja templates. 
       data:{
+        selected_dataset: null,
+        transferAnnotatorResponse: null,
+        newAnnotator: null,
+        showTransferDialog: false,
+        showRemoveDialog: false,
+        unAssignAnnotatorResponse: null,
+        assignedAnnotatorDialog: false,
+        selectedAnnotatorRow: null,
+        dialog: false,
+        headers: [
+          { text: 'Annotator', value: 'annotator'},
+          { text: 'Title', value: 'title'},
+          { text: 'Dataset ID', value: 'dataset_id'},
+        ],
+        assignedRows: [],
+        editedIndex: -1,
+        editedItem: {
+          name: '',
+          calories: 0,
+          fat: 0,
+          carbs: 0,
+          protein: 0,
+        },
+        assignedDatasets: null,
         newUser: {
           username: '',
           password: '',
@@ -177,11 +208,46 @@
         columnDefs: [
             { "text": "USER", "value": "email", "field": "email" },
             { "text": "ACCESS", "value": "role", "field": "role" }, 
-
         ], 
-        rowData: [ { "email": "pwangel@unimelb.edu.au", "role": "annotator" }, { "email": "rajabn@student.unimelb.edu.au", "role": "annotator" }, { "email": "wells.c@unimelb.edu.au", "role": "annotator" }, { "email": "catherine@stemformatics.org", "role": "admin" }, { "email": "jarnyc@unimelb.edu.au", "role": "admin" } ],
+        rowData: [], 
       },
       methods: {
+        transferAnnotator: function(){
+
+          this.showTransferDialog = true;
+          var annotator = this.newAnnotator;
+
+          axios.post('/transferAnnotator', {"data": {"annotator": annotator, "dataset_id": this.selected_dataset}})
+          .then(result => this.transferAnnotatorResponse = result.data);
+
+          location.reload();
+
+        },
+        editItem (item) {
+          this.editedIndex = this.assignedRows.indexOf(item)
+          this.editedItem = Object.assign({}, item)
+          this.dialog = true
+        },
+
+        deleteItem (item) {
+          const index = this.assignedRows.indexOf(item)
+          confirm('Are you sure you want to delete this item?') && this.assignedRows.splice(index, 1)
+        },
+        close () {
+          this.dialog = false
+          this.$nextTick(() => {
+            this.editedItem = Object.assign({}, this.defaultItem)
+            this.editedIndex = -1
+          })
+        },
+        save () {
+          if (this.editedIndex > -1) {
+            Object.assign(this.assignedRows[this.editedIndex], this.editedItem)
+          } else {
+            this.assignedRows.push(this.editedItem)
+          }
+          this.close()
+        },
         updateUser: function(){
             if(this.update.password === this.update.verifyPassword){
               axios.post("/user_update", {"data": this.update})
@@ -263,17 +329,59 @@
             this.update.username = event.email;
             this.updateDialog = true;
             this.clicked = event;
-        }
+        },
+        datasetRowHandleClick: function(item){
+          this.selected_dataset = item.dataset_id;
+          this.assignedAnnotatorDialog = true;
+          this.selectedAnnotatorRow = item;
+
+        },
+        removeAnnotator: function(){
+
+          const dataset_id = this.selectedAnnotatorRow.dataset_id;
+          const title = this.selectedAnnotatorRow.title;
+          const annotator = this.selectedAnnotatorRow.annotator;
+        
+          axios.post('/unAssignAnnotator', {"data": {"dataset_id": dataset_id, "title": title, "annotator": annotator}})
+          .then(result => this.unAssignAnnotatorResponse = result.data);
+
+          location.reload();
+        },
       },
       computed: {
- 
+        formTitle () {
+          return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+        },
+      },
+      watch: {
+        dialog (val) {
+          val || this.close()
+        },
       },
       mounted(){
+
 
         axios.post("/api/get_all_users")
         .then(result => this.rowData = result.data.users.map(function(item){
             return item;
         }))
+
+        axios.post("/api/get_assigned_datasets")
+        .then(result => this.assignedRows = result.data.assigned_datasets.map(function(item){
+
+          var dataset_id = item['dataset_id']
+          var annotator = item['annotator']
+          var title = item['title'].replace(/[^a-zA-Z0-9]+/g, " ")
+
+          obj = {
+            'dataset_id': dataset_id,
+            'annotator': annotator,
+            'title': title
+          }
+
+          return obj;
+          
+        }));
 
       }
 

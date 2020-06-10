@@ -12,7 +12,11 @@ module = Blueprint('dataset_upload', __name__)
 def new_dataset():
 
     if session["loggedIn"] == True:
+
+        admin = session["admin"]
         user = session["user"]
-        return render_template('/api/new_dataset.html', user=user)
+        role = session["role"]
+
+        return render_template('/api/new_dataset.html', role=role, admin=admin, user=user)
     else:
         return redirect('/login_error')

@@ -13,6 +13,7 @@ from flask_swagger_ui import get_swaggerui_blueprint    # Required for swagger U
 from werkzeug import secure_filename
 import re
 import pymongo
+from app import app
 
 
 module = Blueprint('upload', __name__)
@@ -33,14 +34,15 @@ def _runSql(sql, data=None, type="select", printSql=False):
 
     If printSql is True, then the actual sql being executed will be printed
     """
-    postgres_username = os.environ["POSTGRES_USERNAME"]
-    postgres_password = os.environ["POSTGRES_PASSWORD"]
-    postgres_database_name = os.environ["POSTGRES_DATABASE_NAME"]
-    postgres_port = os.environ["POSTGRES_PORT"]
-    postgres_uri = os.environ["PSQL_URI"]
+    postgres_username = app.config['POSTGRES_USERNAME'] 
+    postgres_password = app.config["POSTGRES_PASSWORD"]
+    postgres_database_name = app.config["POSTGRES_DATABASE_NAME"]
+    postgres_host = app.config["POSTGRES_HOST"]
+    postgres_port = app.config["POSTGRES_PORT"]
+    postgres_uri = app.config["PSQL_URI"]
     conn = psycopg2.connect(postgres_uri)
     cursor = conn.cursor()
-    mongo_uri = os.environ["MONGO_URI"]
+    mongo_uri = app.config["MONGO_URI"]
 
     if printSql:  # To see the actual sql executed, use mogrify:
         print(cursor.mogrify(sql, data))
@@ -98,14 +100,16 @@ def save_dataset():
     """
     Handles saving new samples files, metadata and governance. 
     """
-    
-    postgres_username = os.environ["POSTGRES_USERNAME"]
-    postgres_password = os.environ["POSTGRES_PASSWORD"]
-    postgres_database_name = os.environ["POSTGRES_DATABASE_NAME"]
-    postgres_port = os.environ["POSTGRES_PORT"]
-    postgres_uri = os.environ["PSQL_URI"]
+
+    postgres_username = app.config['POSTGRES_USERNAME'] 
+    postgres_password = app.config["POSTGRES_PASSWORD"]
+    postgres_database_name = app.config["POSTGRES_DATABASE_NAME"]
+    postgres_host = app.config["POSTGRES_HOST"]
+    postgres_port = app.config["POSTGRES_PORT"]
+    postgres_uri = app.config["PSQL_URI"]
     conn = psycopg2.connect(postgres_uri)
     cursor = conn.cursor()
+    mongo_uri = app.config["MONGO_URI"]
 
     received = request.get_json()
     
@@ -158,7 +162,7 @@ def save_dataset():
             This block handles adding dataset metadata to the dataportal_prod_meta database in mongodb.
             ===========================================================================================
             """
-            mongo_uri = os.environ["MONGO_URI"]
+            mongo_uri = app.config["MONGO_URI"]
             myclient = pymongo.MongoClient(mongo_uri) # Mongo container name is 'mongo'. # local mongodb server.   # Connects to the mongodb daabase and returns everything.
             database = myclient["dataportal_prod_meta"]
             collection = database["datasets"]

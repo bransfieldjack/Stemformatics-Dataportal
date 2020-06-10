@@ -148,12 +148,12 @@ class Dataset(object):
         """
         Return samples in the dataset as a pandas DataFrame object.
         """
+
         if self._sampleTable is None:   # make a query, construct the DataFrame and cache it
             # result = cursor.execute("select sample_id, replicate_group_id, sample_name, sample_name_long, sample_type, sample_type_long, generic_sample_type, generic_sample_type_long, sample_description, tissue_organism_part, parental_cell_type, final_cell_type, cell_line, reprogramming_method, developmental_stage, media, disease_state,labelling, genetic_modification, facs_profile, age, sex, organism, chip_type, dataset_id from samples where dataset_id=%s", (self.datasetId,))# < -- Correct statement but because dataset_id columns not yet loaded into the database, using this query instead (limit 100). 
             # data = cursor.fetchall()
             data = _runSql("select sample_id, replicate_group_id, sample_name, sample_name_long, sample_type, sample_type_long, generic_sample_type, generic_sample_type_long, sample_description, tissue_organism_part, parental_cell_type, final_cell_type, cell_line, reprogramming_method, developmental_stage, media, disease_state,labelling, genetic_modification, facs_profile, age, sex, organism, chip_type, dataset_id from samples where dataset_id=%s", (self.datasetId,))
             df = pandas.DataFrame(data)  # empty DataFrame with id as index
-
             df.columns=['sample_id', 'replicate_group_id', 'sample_name', 'sample_name_long', 'sample_type', 'sample_type_long', 'generic_sample_type', 'generic_sample_type_long', 'sample_description', 'tissue_organism_part', 'parental_cell_type', 'final_cell_type', 'cell_line', 'reprogramming_method', 'developmental_stage', 'media', 'disease_state', 'labelling', 'genetic_modification', 'facs_profile', 'age', 'sex', 'organism', 'chip_type', 'dataset_id']
             # df.set_index('sample_id', inplace=True)
         self._sampleTable = df

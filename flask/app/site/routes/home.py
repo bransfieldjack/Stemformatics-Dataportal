@@ -12,9 +12,12 @@ module = Blueprint('home', __name__)
 def home():
 
     if session["loggedIn"] == True:
+        
         admin = session["admin"]
         user = session["user"]
-        return render_template('/api/home.html', admin=admin, user=user)
+        role = session["role"]
+        
+        return render_template('/api/home.html', role=role, admin=admin, user=user)
     else:
         return redirect('/login_error')
 
