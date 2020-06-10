@@ -229,6 +229,7 @@
       delimiters: ['[[',']]'],  // Change to '[[]]' otherwise the standard moustache interpolation will interfere with flasks jinja template. 
       data:{
         user: '{{ user }}',
+        role: '{{ role }}',
         responseAssignedAnnotator: '',
         assignAnnotatorResponseMessage: null,
         annotatorIsLoading: false,
@@ -305,11 +306,13 @@
           dataset_id = this.dataset_being_edited;
           var username = this.annotatorUsername;
           var password = this.annotatorPassword;
+          var role = this.role;
 
           data = {
             "dataset_id": dataset_id,
             "username": username,
-            "password": password
+            "password": password,
+            "role": role,
           }
 
           axios.post("/assignAnnotator", {"data": data})

@@ -8,6 +8,7 @@ from pymongo import MongoClient
 import flask_login
 from bson.json_util import dumps
 from app import app
+from datetime import date
 
 """
 The page that this is rendering gets most of its functionality
@@ -18,7 +19,9 @@ module = Blueprint('annotation', __name__)
 mongo_uri = app.config["MONGO_URI"]
 myclient = pymongo.MongoClient(mongo_uri)
 database = myclient["dataportal_prod_meta"]
+governanceDatabase = myclient["dataportal_prod_governance"]
 collection = database["datasets"]
+governanceCollection = governanceDatabase["annotator_interactions"]
 
 
 @module.route('/annotation')
@@ -26,7 +29,8 @@ def annotation():
     
     if session["loggedIn"] == True:
         user = session["user"]
-        return render_template('/api/annotation.html', user=user)
+        role = session["role"]
+        return render_template('/api/annotation.html', user=user, role=role)
     else:
         return redirect('/login_error')
 
@@ -67,8 +71,15 @@ def assignAnnotator():
             try: 
                 myquery = { "dataset_id": dataset_id }
                 newvalues = { "$set": { "annotator": username, "can_annotate": True } }
-                print(newvalues)
                 collection.update_one(myquery, newvalues)
+
+                """
+                Below code: future iteration for recording actions with the governance table. 
+                """
+                # message = username + " " + "added to dataset" + " " + dataset_id
+                # today = date.today()
+                # governanceCollection.insert({"name" : username, "role" : role, "notes" : message, "date" : today })
+                
                 return username + " " + "is now annotating this dataset."
                 # collection.update({"dataset_id": dataset_id}, {"$set": {"annotator": username, "can_annotate": true}}, upsert=False)
             except:
@@ -99,6 +110,27 @@ def unAssignAnnotator():
         return "Annotator removed"
     except:
         return "Error, annotator removal unsuccessful. "
+
+    
+@module.route('/transferAnnotator', methods=['GET', 'POST'])
+def transferAnnotator():
+    """
+    Assigns a user to a dataset for annotation. 
+    """
+
+    data = request.get_json()
+    payload = data['data']
+    annotator = payload['annotator']
+    dataset_id = payload['dataset_id']
+
+    try:
+        myquery = { "dataset_id": dataset_id }
+        newvalues = { "$set": { "annotator": annotator} } 
+        collection.update_one(myquery, newvalues)
+        return "Annotator transferred"
+    except:
+        return "Error, annotator removal unsuccessful. "
+
 
 @module.route('/search_mongo', methods=['GET', 'POST'])
 def search_mongo():

@@ -241,12 +241,36 @@
             <v-row >
               <v-col cols="12" md="2"></v-col>
               <v-col cols="12" md="8">
-                <v-btn block tile color="warning">
+                <v-btn block tile color="warning" @click="showTransferDialog = true">
                   Transfer
                 </v-btn>
               </v-col>
               <v-col cols="12" md="2"></v-col>
             </v-row>
+
+            <template v-if="showTransferDialog">
+              <br>
+              <p>Transfer Annotator:</p>
+              <div v-for="(item, key, index) in selectedAnnotatorRow" :key="item">
+                [[key]] : [[item]]
+              </div>
+              <hr>
+              <br>
+              <p>Transfer to:</p>
+              <v-text-field v-model="newAnnotator"></v-text-field>
+              <hr>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-btn block tile color="success" @click="transferAnnotator">Confirm</v-btn>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-btn block tile color="error" @click="showTransferDialog = false">Cancel</v-btn>
+                  </v-col>
+                  [[transferAnnotatorResponse]]
+                </v-row>
+              </v-container>
+            </template>
 
             <template v-if="showRemoveDialog">
               <br>
