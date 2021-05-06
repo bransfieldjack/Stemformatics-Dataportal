@@ -12,7 +12,7 @@ flasgger==0.9.3
 Flask==1.1.1
 Flask-API==1.1
 Flask-Bcrypt==0.7.1
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 Flask-JWT==0.3.2
 # Flask-JWT-Extended==3.23.0
 Flask-Login==0.4.1
