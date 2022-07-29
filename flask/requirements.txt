@@ -32,7 +32,7 @@ Mako==1.1.0
 MarkupSafe==1.1.1
 marshmallow==3.0.3
 mccabe==0.6.1
-mistune==0.8.4
+mistune==2.0.3
 # mod-wsgi==4.7.0
 numpy==1.17.2
 pandas==0.25.1
